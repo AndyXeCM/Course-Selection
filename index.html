@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aoody Concorde · Course Selection</title>
+  <meta name="color-scheme" content="light" />
+  <style>
+    :root{
+      --bg-img: url('http://youke.xn--y7xa690gmna.cn/s1/2026/01/19/696e49a1b0215.webp');
+      --ink: #1c1b20;
+      --glass: rgba(255,255,255,.16);
+      --glass-2: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.22);
+      --shadow: 0 16px 50px rgba(0,0,0,.18);
+      --warm-a: #ffb26b;
+      --warm-b: #ff6f59;
+      --warm-c: #ffd6a5;
+      --good: #1f9d55;
+      --mid: #f59e0b;
+      --hard: #ef4444;
+      --radius: 20px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      color: rgba(255,255,255,.92);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      background: #0b0a10;
+      overflow-x:hidden;
+    }
+
+    /* Background */
+    .bg{
+      position:fixed;
+      inset:0;
+      background-image: var(--bg-img);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      z-index:-3;
+      filter: saturate(1.05) contrast(1.05);
+    }
+    .bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(1100px 600px at 15% 10%, rgba(255,178,107,.55), transparent 60%),
+        radial-gradient(900px 520px at 85% 20%, rgba(255,111,89,.45), transparent 60%),
+        radial-gradient(1000px 700px at 60% 90%, rgba(255,214,165,.38), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.62));
+    }
+    .noise{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      pointer-events:none;
+      opacity:.10;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+      mix-blend-mode: overlay;
+    }
+
+    /* Layout */
+    .wrap{
+      width:min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .glass{
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    header{
+      padding: 22px 22px 18px;
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+    .logo{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,178,107,.95), rgba(255,111,89,.95));
+      box-shadow: 0 10px 30px rgba(255,111,89,.22);
+      position: relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute;
+      inset:-40% -20% auto auto;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), transparent 60%);
+      transform: rotate(18deg);
+      opacity:.75;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    .brand p{
+      margin:2px 0 0;
+      font-size: 12px;
+      color: rgba(255,255,255,.72);
+    }
+
+    .controls{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    .seg{
+      display:flex;
+      gap: 6px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .seg button{
+      border:0;
+      cursor:pointer;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: rgba(255,255,255,.86);
+      background: transparent;
+      font-weight: 600;
+      font-size: 13px;
+      transition: .2s ease;
+    }
+    .seg button.active{
+      background: rgba(255,255,255,.18);
+      box-shadow: 0 10px 26px rgba(0,0,0,.18);
+    }
+
+    .search{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.16);
+      min-width: 240px;
+    }
+    .search input{
+      width: 100%;
+      border:0;
+      outline:0;
+      background: transparent;
+      color: rgba(255,255,255,.92);
+      font-size: 13px;
+    }
+    .search input::placeholder{ color: rgba(255,255,255,.55); }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      padding: 28px 26px;
+      position: relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background:
+        radial-gradient(420px 220px at 18% 18%, rgba(255,178,107,.35), transparent 60%),
+        radial-gradient(360px 220px at 82% 18%, rgba(255,111,89,.28), transparent 60%),
+        radial-gradient(520px 300px at 55% 105%, rgba(255,214,165,.22), transparent 60%);
+      filter: blur(2px);
+      pointer-events:none;
+    }
+    .hero .grid{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 860px){
+      .hero .grid{ grid-template-columns: 1fr; }
+    }
+
+    .hero h2{
+      margin: 0 0 10px;
+      font-size: clamp(22px, 2.5vw, 34px);
+      line-height: 1.15;
+      letter-spacing: .2px;
+    }
+    .hero .lead{
+      margin: 0 0 18px;
+      color: rgba(255,255,255,.78);
+      font-size: 14px;
+      max-width: 60ch;
+    }
+
+    .chips{ display:flex; flex-wrap:wrap; gap: 8px; }
+    .chip{
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.12);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat{
+      padding: 14px 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.14);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .stat .k{
+      font-size: 11px;
+      color: rgba(255,255,255,.66);
+      margin-bottom: 4px;
+    }
+    .stat .v{
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    /* Filters */
+    .filters{
+      margin-top: 14px;
+      padding: 14px;
+    }
+    .filterRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    .pillbar{ display:flex; flex-wrap:wrap; gap: 8px; }
+    .pill{
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.14);
+      color: rgba(255,255,255,.86);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor:pointer;
+      transition: .18s ease;
+      user-select:none;
+    }
+    .pill:hover{ transform: translateY(-1px); }
+    .pill.active{
+      background: linear-gradient(135deg, rgba(255,178,107,.26), rgba(255,111,89,.22));
+      border-color: rgba(255,214,165,.45);
+    }
+
+    .hint{ font-size: 12px; color: rgba(255,255,255,.62); }
+
+    /* Sections */
+    .section{ margin-top: 18px; }
+    .sectionHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+    .sectionHead h3{ margin:0; font-size: 16px; letter-spacing:.2px; }
+    .sectionHead .sub{ margin:0; font-size: 12px; color: rgba(255,255,255,.66); }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 980px){ .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 620px){ .cards{ grid-template-columns: 1fr; } }
+
+    .card{
+      padding: 14px 14px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.14);
+      transition: transform .18s ease, background .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:hover{
+      transform: translateY(-3px);
+      background: rgba(0,0,0,.18);
+    }
+
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .title{
+      font-weight: 800;
+      letter-spacing:.2px;
+      font-size: 14px;
+      margin:0;
+    }
+    .meta{
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: rgba(255,255,255,.66);
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .tag{
+      font-size: 11px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      white-space:nowrap;
+    }
+    .tag.ap{ background: rgba(255,178,107,.16); border-color: rgba(255,214,165,.35); }
+    .tag.self{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
+
+    .desc{
+      margin: 10px 0 0;
+      font-size: 12.5px;
+      color: rgba(255,255,255,.80);
+      line-height: 1.55;
+    }
+
+    .diffRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stars{ font-size: 12px; letter-spacing: 1px; }
+    .stars .off{ opacity:.28; }
+    .badge{
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.14);
+    }
+
+    .bar{
+      margin-top: 10px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .bar > div{
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,178,107,.9), rgba(255,111,89,.88));
+      box-shadow: 0 12px 28px rgba(255,111,89,.22);
+      transition: width .6s ease;
+    }
+
+    details{
+      margin-top: 10px;
+      border-top: 1px dashed rgba(255,255,255,.18);
+      padding-top: 10px;
+    }
+    summary{
+      cursor:pointer;
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      list-style:none;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    summary .caret{ display:inline-block; transition: transform .2s ease; }
+    details[open] summary .caret{ transform: rotate(90deg); }
+    .more{
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: rgba(255,255,255,.74);
+      line-height: 1.55;
+    }
+
+    footer{
+      margin-top: 18px;
+      padding: 16px;
+      color: rgba(255,255,255,.62);
+      font-size: 12px;
+      text-align:center;
+    }
+    a{ color: rgba(255,214,165,.92); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header class="glass">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Aoody Concorde · Course Selection</h1>
+            <p>Huafu International · Year 11 & Year 12</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="seg" role="tablist" aria-label="选择年级">
+            <button id="tab-y11" class="active" role="tab" aria-selected="true">Year 11</button>
+            <button id="tab-y12" role="tab" aria-selected="false">Year 12</button>
+          </div>
+
+          <div class="search" role="search">
+            <span aria-hidden="true">🔎</span>
+            <input id="search" type="text" placeholder="搜索课程：例如 Calculus / Film / Sociology" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero glass">
+      <div class="grid">
+        <div>
+          <h2>把课表做成一份“成长地图”</h2>
+          <p class="lead">这里记录我在华附国际（Huafu International）11–12 年级的选课规划：用 STEM 打底，用人文拓宽视野，用艺术保持热爱。每门课都有简介与 ⭐️ 五档难度，Self‑Study 课程会特别标注。</p>
+          <div class="chips" id="heroChips"></div>
+        </div>
+        <div class="stats" id="stats"></div>
+      </div>
+    </section>
+
+    <section class="filters glass">
+      <div class="filterRow">
+        <div class="pillbar" id="pillbar"></div>
+        <div class="hint">提示：可用上方搜索框快速定位；点“展开”看更多学习重点。</div>
+      </div>
+    </section>
+
+    <section class="section" id="section">
+      <div class="sectionHead">
+        <div>
+          <h3 id="sectionTitle">Year 11 · 课程清单</h3>
+          <p class="sub" id="sectionSub">按类别展示（AP / STEM / 人文 / 艺术 / Self‑Study）。</p>
+        </div>
+        <p class="sub" id="resultCount"></p>
+      </div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <footer class="glass">
+      <div>
+        资料来源参考：<a href="https://apstudents.collegeboard.org/" target="_blank" rel="noreferrer">AP Students（College Board）</a>、
+        <a href="https://en.gdhfi.com/academics/curriculum.html" target="_blank" rel="noreferrer">gdhfi.com 课程体系页面</a>，以及公开学习者难度评价汇总。
+      </div>
+      <div style="margin-top:6px;">© <span id="year"></span> Aoody Concorde · Built with warm glass ✨</div>
+    </footer>
+  </div>
+
+  <script>
+    const DIFF_LABEL = {
+      1: '⭐️⭐️（轻松）',
+      2: '⭐️⭐️⭐️（中等）',
+      3: '⭐️⭐️⭐️⭐️（较难）',
+      4: '⭐️⭐️⭐️⭐️⭐️（很难）',
+      5: '⭐️⭐️⭐️⭐️⭐️（很难）'
+    };
+
+    // 五档：1-5（显示 5 颗星，填充到对应数量）
+    // 这里的星级是“学习投入/综合挑战”的直观展示，你也可以随时改。
+    const DATA = {
+      y11: [
+        {
+          name: 'AP Calculus AB',
+          type: 'AP',
+          category: 'STEM',
+          self: false,
+          stars: 3,
+          brief: '微积分入门：极限、导数、积分与建模，强调图像/表格/函数之间的联系与问题解决。',
+          more: '适合喜欢数学推理与应用建模的同学。关键在于“题感 + 规范表达 + 练习量”。建议搭配错题本与定期计时练习。'
+        },
+        {
+          name: 'AP Chemistry',
+          type: 'AP',
+          category: 'STEM',
+          self: false,
+          stars: 5,
+          brief: '大学化学导论：原子结构、化学反应、热化学/动力学、平衡、酸碱与电化学等。',
+          more: '强概念 + 强计算 + 强实验思维。建议做题时把“单位/量纲/条件”写清楚，建立反应类型与公式使用的直觉。'
+        },
+        {
+          name: 'AP English Literature and Composition',
+          type: 'AP',
+          category: 'English',
+          self: false,
+          stars: 4,
+          brief: '文学阅读与写作：精读诗歌、小说、戏剧等文本，训练论证写作与文本细读能力。',
+          more: '难点在于阅读密度、写作结构与时间管理。建议积累高频文学术语，训练“证据—分析—结论”闭环。'
+        },
+        {
+          name: 'AP Business with Personal Finance',
+          type: 'AP',
+          category: 'Social Studies',
+          self: false,
+          stars: 2,
+          brief: '商业与个人理财素养：从基本商业概念到个人财务决策，强调现实应用与案例思维。',
+          more: '偏应用与生活场景：预算、信用、投资基础、企业运作等。适合想把“经济学/商业”落到真实问题的人。'
+        },
+        {
+          name: 'AP Comparative Government and Politics',
+          type: 'AP',
+          category: 'Social Studies',
+          self: true,
+          stars: 2,
+          brief: '比较政治：通过国家案例对比政治制度、政治文化、公共政策与政治变迁。',
+          more: '自学建议：建立“国家对比表”，按主题（选举/政党/政府结构/权利与自由）做横向对照，搭配时事阅读。'
+        },
+        {
+          name: 'Philosophy',
+          type: 'School',
+          category: 'Humanities',
+          self: false,
+          stars: 3,
+          brief: '哲学思维训练：围绕知识、伦理、存在与逻辑等主题，练习提出问题、论证与反驳。',
+          more: '更看重表达与推理的清晰度。适合喜欢“追问为什么”的同学。建议每个主题做一页“概念卡”。'
+        },
+        {
+          name: 'Pottery',
+          type: 'School',
+          category: 'Arts',
+          self: false,
+          stars: 1,
+          brief: '陶艺与手作：从泥料处理、拉坯/捏塑到釉色与烧制，强调动手与审美。',
+          more: '节奏慢但很治愈：作品会经历反复试错。建议记录每次配釉与烧制参数，形成自己的“作品档案”。'
+        }
+      ],
+      y12: [
+        {
+          name: 'AP Physics C',
+          type: 'AP',
+          category: 'STEM',
+          self: false,
+          stars: 5,
+          brief: '微积分物理：以经典力学（及可能的电磁学）为核心，强调建模、推导与多步骤问题解决。',
+          more: '很吃数学与物理直觉：建议做“受力图/能量图/运动学图”的固定流程，公式推导要能讲清每一步。'
+        },
+        {
+          name: 'AP English Language and Composition',
+          type: 'AP',
+          category: 'English',
+          self: false,
+          stars: 3,
+          brief: '修辞与非虚构写作：分析文章如何说服读者，训练论证写作、语气与结构。',
+          more: '更贴近“真实世界写作”：社评、演讲、散文等。建议练“开头钩子 + 论点段落骨架 + 快速改写”。'
+        },
+        {
+          name: 'AP Statistics',
+          type: 'AP',
+          category: 'STEM',
+          self: false,
+          stars: 3,
+          brief: '统计学入门：数据探索、抽样与实验、概率、推断（置信区间/假设检验）等。',
+          more: '不是刷题型数学，更像“用数据讲故事”。建议熟悉图表解读、情境判断与计算器/表格工具使用。'
+        },
+        {
+          name: 'AP Music Theory',
+          type: 'AP',
+          category: 'Arts',
+          self: false,
+          stars: 4,
+          brief: '音乐理论与听辨：读谱、写作、和声分析、视唱练耳等综合训练。',
+          more: '需要稳定练习：每日短练比周末突击更有效。已有乐理/乐器基础会轻松很多。'
+        },
+        {
+          name: 'AP Human Geography',
+          type: 'AP',
+          category: 'Social Studies',
+          self: true,
+          stars: 2,
+          brief: '人文地理：人口、文化、城市、农业、工业与全球化等主题，关注空间模式与人地关系。',
+          more: '自学建议：关键词 + 模型图（推拉因素、城市结构模型等）是核心。做题时练“读图—找模式—套模型”。'
+        },
+        {
+          name: 'Sociology',
+          type: 'School',
+          category: 'Humanities',
+          self: false,
+          stars: 2,
+          brief: '社会学：研究社会结构、群体互动、文化与分层等，用理论解释现实世界。',
+          more: '课程常包含阅读、讨论与小研究项目。你会更敏锐地观察日常现象背后的制度与文化逻辑。'
+        },
+        {
+          name: 'Film Studies',
+          type: 'School',
+          category: 'Arts',
+          self: false,
+          stars: 2,
+          brief: '电影研究：电影史与类型、镜头语言与分析、写作表达，并可能涉及基础制作。',
+          more: '轻松但不“水”：需要把直觉变成可表达的分析（剪辑、光线、构图、配乐、叙事节奏）。适合喜欢电影与表达的人。'
+        }
+      ]
+    };
+
+    const FILTERS = [
+      {key:'all', label:'全部'},
+      {key:'AP', label:'AP'},
+      {key:'self', label:'Self‑Study'},
+      {key:'STEM', label:'STEM'},
+      {key:'English', label:'English'},
+      {key:'Social Studies', label:'Social Studies'},
+      {key:'Humanities', label:'Humanities'},
+      {key:'Arts', label:'Arts'}
+    ];
+
+    const state = {
+      year: 'y11',
+      filter: 'all',
+      query: ''
+    };
+
+    const elCards = document.getElementById('cards');
+    const elResultCount = document.getElementById('resultCount');
+    const elSectionTitle = document.getElementById('sectionTitle');
+    const elPillbar = document.getElementById('pillbar');
+    const elStats = document.getElementById('stats');
+    const elHeroChips = document.getElementById('heroChips');
+
+    function starsHTML(n){
+      const on = '★'.repeat(n);
+      const off = '★'.repeat(5-n);
+      return `<span>${on}</span><span class="off">${off}</span>`;
+    }
+
+    function badgeText(n){
+      if (n <= 1) return '轻松';
+      if (n === 2) return '中等';
+      if (n === 3) return '较难';
+      return '很难';
+    }
+
+    function computeStats(allCourses){
+      const ap = allCourses.filter(c => c.type === 'AP').length;
+      const self = allCourses.filter(c => c.self).length;
+      const stem = allCourses.filter(c => c.category === 'STEM').length;
+      const arts = allCourses.filter(c => c.category === 'Arts').length;
+      return { total: allCourses.length, ap, self, stem, arts };
+    }
+
+    function renderStats(){
+      const all = [...DATA.y11, ...DATA.y12];
+      const s = computeStats(all);
+      elStats.innerHTML = `
+        <div class="stat"><div class="k">总课程数</div><div class="v">${s.total}</div></div>
+        <div class="stat"><div class="k">AP 课程</div><div class="v">${s.ap}</div></div>
+        <div class="stat"><div class="k">Self‑Study</div><div class="v">${s.self}</div></div>
+        <div class="stat"><div class="k">STEM / Arts</div><div class="v">${s.stem} / ${s.arts}</div></div>
+      `;
+
+      const chips = [
+        `暖色玻璃风`,
+        `背景图 + 毛玻璃`,
+        `五档难度 ⭐️`,
+        `筛选 + 搜索`,
+        `Year 11 & 12`
+      ];
+      elHeroChips.innerHTML = chips.map(t=>`<span class="chip">${t}</span>`).join('');
+    }
+
+    function renderPills(){
+      elPillbar.innerHTML = FILTERS.map(f => {
+        const active = (state.filter === f.key) ? 'active' : '';
+        return `<div class="pill ${active}" data-filter="${f.key}">${f.label}</div>`;
+      }).join('');
+
+      elPillbar.querySelectorAll('.pill').forEach(p => {
+        p.addEventListener('click', () => {
+          state.filter = p.getAttribute('data-filter');
+          renderPills();
+          render();
+        });
+      });
+    }
+
+    function applyFilter(list){
+      let out = list;
+
+      // filter
+      if (state.filter !== 'all'){
+        if (state.filter === 'self') out = out.filter(c => c.self);
+        else if (state.filter === 'AP') out = out.filter(c => c.type === 'AP');
+        else out = out.filter(c => c.category === state.filter);
+      }
+
+      // search
+      const q = state.query.trim().toLowerCase();
+      if (q){
+        out = out.filter(c => (
+          c.name.toLowerCase().includes(q) ||
+          c.category.toLowerCase().includes(q) ||
+          (c.type || '').toLowerCase().includes(q)
+        ));
+      }
+
+      return out;
+    }
+
+    function groupLabel(course){
+      // small label set for card
+      const labels = [];
+      labels.push(course.category);
+      if (course.type === 'AP') labels.push('AP');
+      if (course.self) labels.push('Self‑Study');
+      return labels;
+    }
+
+    function renderCards(list){
+      elCards.innerHTML = list.map(c => {
+        const labels = groupLabel(c)
+          .map(x => {
+            if (x === 'AP') return `<span class="tag ap">AP</span>`;
+            if (x === 'Self‑Study') return `<span class="tag self">Self‑Study</span>`;
+            return `<span class="tag">${x}</span>`;
+          }).join('');
+
+        const width = Math.round((c.stars / 5) * 100);
+
+        return `
+          <article class="card" data-stars="${c.stars}">
+            <div class="cardTop">
+              <div>
+                <h4 class="title">${c.name}</h4>
+                <div class="meta">${labels}</div>
+              </div>
+              <span class="badge">${badgeText(c.stars)}</span>
+            </div>
+
+            <p class="desc">${c.brief}</p>
+
+            <div class="diffRow">
+              <div class="stars" aria-label="难度 ${c.stars} / 5">${starsHTML(c.stars)}</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.66)">${c.stars}/5</div>
+            </div>
+
+            <div class="bar" aria-hidden="true"><div style="width:${width}%;"></div></div>
+
+            <details>
+              <summary><span class="caret">▸</span><span>展开查看更多</span></summary>
+              <div class="more">${c.more}</div>
+            </details>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function render(){
+      const list = DATA[state.year];
+      const filtered = applyFilter(list);
+
+      elSectionTitle.textContent = state.year === 'y11' ? 'Year 11 · 课程清单' : 'Year 12 · 课程清单';
+      elResultCount.textContent = `共 ${filtered.length} 门课程`;
+
+      renderCards(filtered);
+    }
+
+    // Tabs
+    const tabY11 = document.getElementById('tab-y11');
+    const tabY12 = document.getElementById('tab-y12');
+
+    tabY11.addEventListener('click', () => {
+      state.year = 'y11';
+      tabY11.classList.add('active');
+      tabY12.classList.remove('active');
+      tabY11.setAttribute('aria-selected','true');
+      tabY12.setAttribute('aria-selected','false');
+      render();
+    });
+    tabY12.addEventListener('click', () => {
+      state.year = 'y12';
+      tabY12.classList.add('active');
+      tabY11.classList.remove('active');
+      tabY12.setAttribute('aria-selected','true');
+      tabY11.setAttribute('aria-selected','false');
+      render();
+    });
+
+    // Search
+    document.getElementById('search').addEventListener('input', (e) => {
+      state.query = e.target.value;
+      render();
+    });
+
+    // Init
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderStats();
+    renderPills();
+    render();
+  </script>
+</body>
+</html>
