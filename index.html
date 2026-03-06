@@ -468,7 +468,7 @@
       <div class="grid">
         <div>
           <h2>把课表做成一份“成长地图”</h2>
-          <p class="lead">这里记录我在HFI（Huafu International）11–12 年级的选课规划：用 STEM 打底，用人文拓宽视野，用艺术保持热爱。每门课都有简介与 ⭐️ 五档难度，Self‑Study 课程会特别标注。</p>
+          <p class="lead">这里记录我在HFI（Huafu International）11–12 年级的选课规划：用数学与计算机科学打牢 STEM 基础，搭配社会科学与艺术课程保持广度。每门课都有简介与 ⭐️ 五档难度，Self‑Study 课程会特别标注。</p>
           <div class="chips" id="heroChips"></div>
         </div>
         <div class="stats" id="stats"></div>
@@ -516,13 +516,13 @@
     const DATA = {
       y11: [
         {
-          name: 'AP Calculus AB',
+          name: 'AP Calculus BC',
           type: 'AP',
           category: 'STEM',
           self: false,
-          stars: 3,
-          brief: '微积分入门：极限、导数、积分与建模，强调图像/表格/函数之间的联系与问题解决。',
-          more: '适合喜欢数学推理与应用建模的同学。关键在于“题感 + 规范表达 + 练习量”。建议搭配错题本与定期计时练习。'
+          stars: 4,
+          brief: '微积分进阶：在 AB 核心上进一步覆盖级数、参数方程、极坐标与更综合的积分应用。',
+          more: '节奏更快、抽象度更高，适合数学基础扎实且愿意高频训练的同学。建议按专题建立错题本，并定期做整卷计时。'
         },
         {
           name: 'AP Chemistry',
@@ -543,13 +543,13 @@
           more: '难点在于阅读密度、写作结构与时间管理。建议积累高频文学术语，训练“证据—分析—结论”闭环。'
         },
         {
-          name: 'AP Business with Personal Finance',
+          name: 'AP Computer Science A',
           type: 'AP',
-          category: 'Social Studies',
+          category: 'STEM',
           self: false,
-          stars: 2,
-          brief: '商业与个人理财素养：从基本商业概念到个人财务决策，强调现实应用与案例思维。',
-          more: '偏应用与生活场景：预算、信用、投资基础、企业运作等。适合想把“经济学/商业”落到真实问题的人。'
+          stars: 3,
+          brief: 'Java 编程与面向对象：变量、控制流、类与对象、数组/ArrayList、算法与程序设计思维。',
+          more: '重点是把“会看代码”变成“会写可读、可调试的代码”。建议多做小项目，练习追踪程序状态与复杂度意识。'
         },
         {
           name: 'AP Comparative Government and Politics',
@@ -559,15 +559,6 @@
           stars: 2,
           brief: '比较政治：通过国家案例对比政治制度、政治文化、公共政策与政治变迁。',
           more: '自学建议：建立“国家对比表”，按主题（选举/政党/政府结构/权利与自由）做横向对照，搭配时事阅读。'
-        },
-        {
-          name: 'Philosophy',
-          type: 'School',
-          category: 'Humanities',
-          self: false,
-          stars: 3,
-          brief: '哲学思维训练：围绕知识、伦理、存在与逻辑等主题，练习提出问题、论证与反驳。',
-          more: '更看重表达与推理的清晰度。适合喜欢“追问为什么”的同学。建议每个主题做一页“概念卡”。'
         },
         {
           name: 'Pottery',
